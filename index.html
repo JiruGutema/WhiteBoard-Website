@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Page Marker Whiteboard - Clean Drawing Canvas</title>
+    <meta name="description" content="A clean whiteboard for use with Page Marker Pro extension. Perfect for drawing, sketching, and note-taking.">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📝</text></svg>">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #ffffff;
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+        
+        /* Grid pattern background */
+        .grid-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 1;
+            background-image: 
+                linear-gradient(rgba(0,0,0,0.08) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0,0,0,0.08) 1px, transparent 1px);
+            background-size: 20px 20px;
+            pointer-events: none;
+            z-index: -1;
+        }
+        
+        /* Header */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+            padding: 10px 20px;
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 60px;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .controls {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+        
+        .control-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            background: rgba(102, 126, 234, 0.1);
+            border-radius: 8px;
+            border: 1px solid rgba(102, 126, 234, 0.2);
+        }
+        
+        .control-label {
+            font-size: 0.9rem;
+            color: #666;
+            font-weight: 500;
+        }
+        
+        select, button {
+            padding: 6px 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            background: white;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        select:hover, button:hover {
+            border-color: #667eea;
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.2);
+        }
+        
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            font-weight: 500;
+        }
+        
+        button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+        
+        /* Main content area */
+        .whiteboard-area {
+            margin-top: 60px;
+            min-height: calc(100vh - 60px);
+            position: relative;
+            background: transparent;
+        }
+        
+        /* Instructions overlay */
+        .instructions {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(15px);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            max-width: 500px;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            z-index: 50;
+            transition: all 0.3s ease;
+        }
+        
+        .instructions.hidden {
+            opacity: 0;
+            pointer-events: none;
+            transform: translate(-50%, -50%) scale(0.9);
+        }
+        
+        .instructions h2 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.5rem;
+        }
+        
+        .instructions p {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 10px;
+        }
+        
+        .instructions .highlight {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 600;
+        }
+        
+        .close-instructions {
+            margin-top: 20px;
+            padding: 10px 20px;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                height: auto;
+                padding: 15px;
+                gap: 10px;
+            }
+            
+            .controls {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            .control-group {
+                padding: 6px 10px;
+            }
+            
+            .whiteboard-area {
+                margin-top: 120px;
+                min-height: calc(100vh - 120px);
+            }
+            
+            .instructions {
+                margin: 20px;
+                max-width: calc(100vw - 40px);
+                padding: 20px;
+            }
+        }
+        
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 4px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
+        }
+    </style>
+</head>
+<body>
+    <div class="grid-background"></div>
+    
+    <header class="header">
+        <div class="logo">
+            <span>📝</span>
+            Page Marker Whiteboard
+        </div>
+        <div class="controls">
+            <div class="control-group">
+                <span class="control-label">Background:</span>
+                <select id="backgroundSelect">
+                    <option value="white">White</option>
+                    <option value="grid">White Grid</option>
+                    <option value="dots">White Dots</option>
+                    <option value="lines">White Lines</option>
+                    <option value="dark">Dark</option>
+                    <option value="dark-grid">Dark Grid</option>
+                    <option value="dark-dots">Dark Dots</option>
+                    <option value="dark-lines">Dark Lines</option>
+                </select>
+            </div>
+            <div class="control-group">
+                <span class="control-label">Size:</span>
+                <select id="sizeSelect">
+                    <option value="normal">Normal</option>
+                    <option value="large">Large</option>
+                    <option value="extra-large">Extra Large</option>
+                </select>
+            </div>
+            <button onclick="showInstructions()">Help</button>
+        </div>
+    </header>
+    
+    <main class="whiteboard-area" id="whiteboardArea">
+        <!-- This is where users will draw with the Page Marker extension -->
+    </main>
+    
+    <div class="instructions" id="instructions">
+        <h2>🎨 Welcome to Page Marker Whiteboard!</h2>
+        <p>This is a clean canvas designed to work with the <span class="highlight">Page Marker Pro</span> browser extension.</p>
+        <p><strong>To start drawing:</strong></p>
+        <p>1. Click the Page Marker extension icon in your browser toolbar</p>
+        <p>2. Use the floating toolbar to select your drawing tools</p>
+        <p>3. Draw, highlight, add text, and annotate freely!</p>
+        <p><strong>Keyboard Shortcuts:</strong></p>
+        <p>Shift + D (Pen) • Shift + H (Highlighter) • Shift + E (Eraser) • Shift + T (Text)</p>
+        <button class="close-instructions" onclick="hideInstructions()">Start Drawing</button>
+    </div>
+    
+    <script>
+        // Background options
+        const backgrounds = {
+            white: {
+                body: '#ffffff',
+                grid: 'none'
+            },
+            grid: {
+                body: '#ffffff',
+                grid: 'linear-gradient(rgba(0,0,0,0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(0,0,0,0.08) 1px, transparent 1px)'
+            },
+            dots: {
+                body: '#ffffff',
+                grid: 'radial-gradient(circle, rgba(0,0,0,0.3) 1px, transparent 2px)'
+            },
+            lines: {
+                body: '#ffffff',
+                grid: 'repeating-linear-gradient(0deg, transparent 0px, transparent 19px, rgba(0,0,0,0.2) 20px)'
+            },
+            dark: {
+                body: '#1a1a1a',
+                grid: 'none'
+            },
+            'dark-grid': {
+                body: '#1a1a1a',
+                grid: 'linear-gradient(rgba(255,255,255,0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.08) 1px, transparent 1px)'
+            },
+            'dark-dots': {
+                body: '#1a1a1a',
+                grid: 'radial-gradient(circle, rgba(255,255,255,0.3) 1px, transparent 2px)'
+            },
+            'dark-lines': {
+                body: '#1a1a1a',
+                grid: 'repeating-linear-gradient(0deg, transparent 0px, transparent 19px, rgba(255,255,255,0.2) 20px)'
+            }
+        };
+        
+        // Size options
+        const sizes = {
+            normal: '20px',
+            large: '30px',
+            'extra-large': '40px'
+        };
+        
+        // DOM elements
+        const backgroundSelect = document.getElementById('backgroundSelect');
+        const sizeSelect = document.getElementById('sizeSelect');
+        const gridBackground = document.querySelector('.grid-background');
+        const instructions = document.getElementById('instructions');
+        const whiteboardArea = document.getElementById('whiteboardArea');
+        
+        // Load saved preferences
+        function loadPreferences() {
+            const savedBackground = localStorage.getItem('whiteboard-background') || 'grid';
+            const savedSize = localStorage.getItem('whiteboard-size') || 'normal';
+            
+            backgroundSelect.value = savedBackground;
+            sizeSelect.value = savedSize;
+            
+            applyBackground(savedBackground);
+            applySize(savedSize);
+        }
+        
+        // Apply background
+        function applyBackground(type) {
+            const bg = backgrounds[type];
+            document.body.style.background = bg.body;
+            
+            if (bg.grid === 'none') {
+                gridBackground.style.display = 'none';
+            } else {
+                gridBackground.style.display = 'block';
+                gridBackground.style.backgroundImage = bg.grid;
+                
+                // Adjust grid patterns based on type
+                if (type.includes('dots')) {
+                    gridBackground.style.backgroundSize = '20px 20px';
+                    gridBackground.style.backgroundPosition = '10px 10px';
+                } else if (type.includes('lines')) {
+                    gridBackground.style.backgroundSize = '100% 20px';
+                    gridBackground.style.backgroundPosition = '0 0';
+                } else {
+                    gridBackground.style.backgroundSize = '20px 20px';
+                    gridBackground.style.backgroundPosition = '0 0';
+                }
+            }
+            
+            // Adjust header and UI for dark mode variants
+            const header = document.querySelector('.header');
+            const controlGroups = document.querySelectorAll('.control-group');
+            const controlLabels = document.querySelectorAll('.control-label');
+            const instructionsDiv = document.getElementById('instructions');
+            
+            if (type.startsWith('dark')) {
+                // Dark mode styling
+                header.style.background = 'rgba(30, 30, 30, 0.95)';
+                header.style.color = 'white';
+                header.style.borderBottom = '1px solid rgba(255, 255, 255, 0.1)';
+                
+                // Update control groups for dark mode
+                controlGroups.forEach(group => {
+                    group.style.background = 'rgba(255, 255, 255, 0.1)';
+                    group.style.border = '1px solid rgba(255, 255, 255, 0.2)';
+                });
+                
+                // Update control labels for dark mode
+                controlLabels.forEach(label => {
+                    label.style.color = '#ccc';
+                });
+                
+                // Update instructions for dark mode
+                instructionsDiv.style.background = 'rgba(30, 30, 30, 0.95)';
+                instructionsDiv.style.color = 'white';
+                instructionsDiv.style.border = '1px solid rgba(255, 255, 255, 0.1)';
+                
+            } else {
+                // Light mode styling
+                header.style.background = 'rgba(255, 255, 255, 0.95)';
+                header.style.color = '#333';
+                header.style.borderBottom = '1px solid rgba(0, 0, 0, 0.1)';
+                
+                // Reset control groups for light mode
+                controlGroups.forEach(group => {
+                    group.style.background = 'rgba(102, 126, 234, 0.1)';
+                    group.style.border = '1px solid rgba(102, 126, 234, 0.2)';
+                });
+                
+                // Reset control labels for light mode
+                controlLabels.forEach(label => {
+                    label.style.color = '#666';
+                });
+                
+                // Reset instructions for light mode
+                instructionsDiv.style.background = 'rgba(255, 255, 255, 0.95)';
+                instructionsDiv.style.color = '#333';
+                instructionsDiv.style.border = '1px solid rgba(0, 0, 0, 0.1)';
+            }
+            
+            localStorage.setItem('whiteboard-background', type);
+        }
+        
+        // Apply size
+        function applySize(size) {
+            const gridSize = sizes[size];
+            const currentBackground = backgroundSelect.value;
+            
+            // Apply size based on pattern type
+            if (currentBackground.includes('dots')) {
+                gridBackground.style.backgroundSize = `${gridSize} ${gridSize}`;
+                gridBackground.style.backgroundPosition = `${parseInt(gridSize)/2}px ${parseInt(gridSize)/2}px`;
+            } else if (currentBackground.includes('lines')) {
+                gridBackground.style.backgroundSize = `100% ${gridSize}`;
+                gridBackground.style.backgroundPosition = '0 0';
+            } else if (currentBackground.includes('grid')) {
+                gridBackground.style.backgroundSize = `${gridSize} ${gridSize}`;
+                gridBackground.style.backgroundPosition = '0 0';
+            }
+            
+            // Adjust whiteboard area height for larger sizes
+            const multiplier = size === 'extra-large' ? 3 : size === 'large' ? 2 : 1;
+            whiteboardArea.style.minHeight = `${100 * multiplier}vh`;
+            
+            localStorage.setItem('whiteboard-size', size);
+        }
+        
+        // Show instructions
+        function showInstructions() {
+            instructions.classList.remove('hidden');
+        }
+        
+        // Hide instructions
+        function hideInstructions() {
+            instructions.classList.add('hidden');
+        }
+        
+        // Event listeners
+        backgroundSelect.addEventListener('change', (e) => {
+            applyBackground(e.target.value);
+            applySize(sizeSelect.value); // Reapply size to maintain pattern
+        });
+        
+        sizeSelect.addEventListener('change', (e) => {
+            applySize(e.target.value);
+            applyBackground(backgroundSelect.value); // Reapply background to maintain pattern
+        });
+        
+        // Auto-hide instructions after 5 seconds
+        setTimeout(() => {
+            if (!localStorage.getItem('instructions-seen')) {
+                setTimeout(hideInstructions, 5000);
+                localStorage.setItem('instructions-seen', 'true');
+            } else {
+                hideInstructions();
+            }
+        }, 1000);
+        
+        // Initialize
+        loadPreferences();
+        
+        // Add some dynamic height to ensure scrolling works
+        function extendPage() {
+            const currentHeight = document.body.scrollHeight;
+            const viewportHeight = window.innerHeight;
+            
+            if (currentHeight < viewportHeight * 3) {
+                whiteboardArea.style.minHeight = `${viewportHeight * 3}px`;
+            }
+        }
+        
+        // Extend page on load and resize
+        window.addEventListener('load', extendPage);
+        window.addEventListener('resize', extendPage);
+        
+        // Add some helpful console messages
+        console.log('🎨 Page Marker Whiteboard loaded!');
+        console.log('💡 Tip: Click the Page Marker extension icon to start drawing');
+        console.log('⌨️  Keyboard shortcuts: Shift + D/H/E/T for Pen/Highlighter/Eraser/Text');
+    </script>
+</body>
+</html>

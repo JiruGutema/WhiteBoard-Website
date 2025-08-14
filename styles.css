@@ -1,0 +1,209 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #ffffff;
+    min-height: 100vh;
+    position: relative;
+    overflow-x: hidden;
+}
+
+/* Grid pattern background */
+.grid-background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 1;
+    background-image: 
+        linear-gradient(rgba(0,0,0,0.08) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,0,0,0.08) 1px, transparent 1px);
+    background-size: 20px 20px;
+    pointer-events: none;
+    z-index: -1;
+}
+
+/* Header */
+.header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    padding: 10px 20px;
+    z-index: 100;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 60px;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #333;
+}
+
+.controls {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+}
+
+.control-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    background: rgba(102, 126, 234, 0.1);
+    border-radius: 8px;
+    border: 1px solid rgba(102, 126, 234, 0.2);
+}
+
+.control-label {
+    font-size: 0.9rem;
+    color: #666;
+    font-weight: 500;
+}
+
+select, button {
+    padding: 6px 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    background: white;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+select:hover, button:hover {
+    border-color: #667eea;
+    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.2);
+}
+
+button {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    font-weight: 500;
+}
+
+button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+/* Main content area */
+.whiteboard-area {
+    margin-top: 60px;
+    min-height: calc(100vh - 60px);
+    position: relative;
+    background: transparent;
+}
+
+/* Instructions overlay */
+.instructions {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(15px);
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    max-width: 500px;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    z-index: 50;
+    transition: all 0.3s ease;
+}
+
+.instructions.hidden {
+    opacity: 0;
+    pointer-events: none;
+    transform: translate(-50%, -50%) scale(0.9);
+}
+
+.instructions h2 {
+    color: #667eea;
+    margin-bottom: 15px;
+    font-size: 1.5rem;
+}
+
+.instructions p {
+    color: #666;
+    line-height: 1.6;
+    margin-bottom: 10px;
+}
+
+.instructions .highlight {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-weight: 600;
+}
+
+.close-instructions {
+    margin-top: 20px;
+    padding: 10px 20px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .header {
+        flex-direction: column;
+        height: auto;
+        padding: 15px;
+        gap: 10px;
+    }
+    
+    .controls {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    
+    .control-group {
+        padding: 6px 10px;
+    }
+    
+    .whiteboard-area {
+        margin-top: 120px;
+        min-height: calc(100vh - 120px);
+    }
+    
+    .instructions {
+        margin: 20px;
+        max-width: calc(100vw - 40px);
+        padding: 20px;
+    }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
+}

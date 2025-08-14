@@ -221,8 +221,8 @@ function init() {
     extendPage();
     
     // Add some helpful console messages
-    console.log('🎨 Page Marker Whiteboard loaded!');
-    console.log('💡 Tip: Click the Page Marker extension icon to start drawing');
+    console.log('🎨 Firefox Marker Whiteboard loaded!');
+    console.log('💡 Tip: Click the Firefox Marker extension icon to start drawing');
     console.log('⌨️  Keyboard shortcuts: Shift + D/H/E/T for Pen/Highlighter/Eraser/Text');
 }
 

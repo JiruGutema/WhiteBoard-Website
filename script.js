@@ -103,8 +103,7 @@ function applyBackground(type) {
         
         // Update control groups for dark mode
         controlGroups.forEach(group => {
-            group.style.background = 'rgba(255, 255, 255, 0.1)';
-            group.style.border = '1px solid rgba(255, 255, 255, 0.2)';
+            group.style.background = 'inherit';
         });
         
         // Update control labels for dark mode
@@ -125,8 +124,7 @@ function applyBackground(type) {
         
         // Reset control groups for light mode
         controlGroups.forEach(group => {
-            group.style.background = 'rgba(102, 126, 234, 0.1)';
-            group.style.border = '1px solid rgba(102, 126, 234, 0.2)';
+            group.style.background = 'inherit';
         });
         
         // Reset control labels for light mode
@@ -221,9 +219,9 @@ function init() {
     extendPage();
     
     // Add some helpful console messages
-    console.log('🎨 Firefox Marker Whiteboard loaded!');
-    console.log('💡 Tip: Click the Firefox Marker extension icon to start drawing');
-    console.log('⌨️  Keyboard shortcuts: Shift + D/H/E/T for Pen/Highlighter/Eraser/Text');
+    console.log('Firefox Marker Whiteboard loaded!');
+    console.log('Tip: Click the Firefox Marker extension icon to start drawing');
+    console.log('Keyboard shortcuts: Shift + D/H/E/T for Pen/Highlighter/Eraser/Text');
 }
 
 // Event listeners for page load and resize

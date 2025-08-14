@@ -65,9 +65,7 @@ body {
     align-items: center;
     gap: 8px;
     padding: 8px 12px;
-    background: rgba(102, 126, 234, 0.1);
     border-radius: 8px;
-    border: 1px solid rgba(102, 126, 234, 0.2);
 }
 
 .control-label {
@@ -199,11 +197,3 @@ button:hover {
     background: #f1f1f1;
 }
 
-::-webkit-scrollbar-thumb {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-    background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
-}

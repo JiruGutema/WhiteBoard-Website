@@ -165,6 +165,15 @@ function applySize(size) {
     localStorage.setItem('whiteboard-size', size);
 }
 
+// Toggle instructions based on current state
+function toggleInstructions() {
+    if (instructions.classList.contains('hidden')) {
+        instructions.classList.remove('hidden');
+    } else {
+        instructions.classList.add('hidden');
+    }
+}
+
 // Show instructions
 function showInstructions() {
     instructions.classList.remove('hidden');
@@ -174,7 +183,6 @@ function showInstructions() {
 function hideInstructions() {
     instructions.classList.add('hidden');
 }
-
 // Setup event listeners
 function setupEventListeners() {
     backgroundSelect.addEventListener('change', (e) => {
@@ -186,18 +194,6 @@ function setupEventListeners() {
         applySize(e.target.value);
         applyBackground(backgroundSelect.value); // Reapply background to maintain pattern
     });
-}
-
-// Auto-hide instructions after delay
-function setupInstructionsTimer() {
-    setTimeout(() => {
-        if (!localStorage.getItem('instructions-seen')) {
-            setTimeout(hideInstructions, 5000);
-            localStorage.setItem('instructions-seen', 'true');
-        } else {
-            hideInstructions();
-        }
-    }, 1000);
 }
 
 // Add some dynamic height to ensure scrolling works
@@ -215,13 +211,7 @@ function init() {
     initializeElements();
     loadPreferences();
     setupEventListeners();
-    setupInstructionsTimer();
     extendPage();
-    
-    // Add some helpful console messages
-    console.log('Firefox Marker Whiteboard loaded!');
-    console.log('Tip: Click the Firefox Marker extension icon to start drawing');
-    console.log('Keyboard shortcuts: Shift + D/H/E/T for Pen/Highlighter/Eraser/Text');
 }
 
 // Event listeners for page load and resize

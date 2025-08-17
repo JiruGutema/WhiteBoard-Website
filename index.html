@@ -15,12 +15,8 @@
     <div class="grid-background"></div>
 
     <header class="header">
-      <div class="logo">
-        Firefox Marker Whiteboard
-      </div>
-      <div class="controls" >
+      <div class="controls" style="display: flex; flex-direction: row; gap: 10px;" >
         <div class="control-group">
-          <span class="control-label">Background:</span>
           <select id="backgroundSelect">
             <option value="white">White</option>
             <option value="grid">White Grid</option>
@@ -33,14 +29,13 @@
           </select>
         </div>
         <div class="control-group">
-          <span class="control-label">Size:</span>
           <select id="sizeSelect">
             <option value="normal">Normal</option>
             <option value="large">Large</option>
             <option value="extra-large">Extra Large</option>
           </select>
         </div>
-        <button onclick="showInstructions()">Help</button>
+        <button onclick="toggleInstructions()">?</button>
       </div>
     </header>
 
@@ -48,14 +43,14 @@
       <!-- This is where users will draw with the Firefox Marker extension -->
     </main>
 
-    <div class="instructions" id="instructions">
+    <div class="instructions hidden" id="instructions" >
       <h2>Welcome to Firefox Marker Whiteboard!</h2>
       <p>
         This is a clean canvas designed to work with the
         <span class="highlight">Firefox Marker Pro</span> browser extension.
       </p>
       <p><strong>To start drawing:</strong></p>
-      <p>1. Click the Firefox Marker extension icon in your browser toolbar</p>
+      <p>1. Click the Web Marker extension icon in your browser toolbar or download it here <a href="https://addons.mozilla.org/en-US/firefox/addon/draw-and-mark-a-webpage/">Draw and Mark a webpage</a></p>
       <p>2. Use the floating toolbar to select your drawing tools</p>
       <p>3. Draw, highlight, add text, and annotate freely!</p>
       <p><strong>Keyboard Shortcuts:</strong></p>
@@ -64,8 +59,11 @@
         T (Text)
       </p>
       <button class="close-instructions" onclick="hideInstructions()">
-        Start Drawing
+        OK
       </button>
+      <div>
+        Developer: <a href="https://jirugutema.vercel.app">Jiru Gutema</a>
+      </div>
     </div>
 
     <script src="script.js"></script>
